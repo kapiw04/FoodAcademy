@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 
@@ -8,15 +8,16 @@ class FoodCreate(BaseModel):
     expiration_date: date
     quantity: int
     opened: bool = False
-    opened_date: Optional[str] = None
+    opened_date: Optional[date] = None
 
 
 class FoodUpdate(BaseModel):
+    id: int
     name: Optional[str]
-    expiration_date: Optional[date]
-    quantity: Optional[int]
-    opened: Optional[bool] = False
-    opened_date: Optional[str] = None
+    expiration_date: Optional[date] = None
+    quantity: Optional[int] = None
+    opened: Optional[bool] = None
+    opened_date: Optional[date] = None
 
 
 class FoodResponse(BaseModel):
@@ -25,4 +26,8 @@ class FoodResponse(BaseModel):
     expiration_date: date
     quantity: int
     opened: bool
-    opened_date: Optional[str] = None
+    opened_date: Optional[date] = None
+
+
+class FoodDelete(BaseModel):
+    id: int
