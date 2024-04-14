@@ -17,6 +17,13 @@ def get_db():
 def read_root() -> Union[str, dict]:
     return {"Hello": "World"}
 
+@router.get("/list/")
+def list_food(database: Session = Depends(get_db)):
+    try:
+        return crud.read_food_items(db=database)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.post("/add_food/", response_model=schemas.FoodCreate)
 def add_food(food: schemas.FoodCreate, database: Session = Depends(get_db)):
     try:

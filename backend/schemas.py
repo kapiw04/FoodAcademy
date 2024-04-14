@@ -5,22 +5,24 @@ from datetime import date
 
 class FoodCreate(BaseModel):
     name: str
-    expiration_date: str
+    expiration_date: date
     quantity: int
     opened: bool = False
     opened_date: Optional[str] = None
 
+
+class FoodUpdate(BaseModel):
+    name: Optional[str]
+    expiration_date: Optional[date]
+    quantity: Optional[int]
+    opened: Optional[bool] = False
+    opened_date: Optional[str] = None
+
+
 class FoodResponse(BaseModel):
     id: int
     name: str
-    expiration_date: str
+    expiration_date: date
     quantity: int
     opened: bool
     opened_date: Optional[str] = None
-
-    @field_validator('expiration_date')
-    @classmethod
-    def format_expiration_date(cls, value):
-        if isinstance(value, date):
-            return value.strftime("%d-%m-%Y")
-        return value
