@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+from . import models, schemas, definitions
 
 
 def create_food_item(db: Session, food: schemas.FoodCreate):
@@ -14,8 +14,20 @@ def create_food_item(db: Session, food: schemas.FoodCreate):
     return created_food
 
 
-def read_food_items(db: Session):
-    return db.query(models.FoodItem).all()
+def read_food_items(db: Session, sort_by: str, order: str):
+    if sort_by not in definitions.sortBy:
+        raise ValueError(f"Invalid sort_by value: {sort_by}")
+
+    if order not in definitions.order:
+        raise ValueError(f"Invalid order value: {order}")
+
+    order = definitions.order[order](definitions.sortBy[sort_by])
+
+    return db.query(models.FoodItem).order_by(order).all()
+
+
+def read_food_item(db: Session, food_id: int):
+    return db.query(models.FoodItem).filter(models.FoodItem.id == food_id).one_or_none()
 
 
 def update_food_item(db: Session, food: schemas.FoodUpdate):

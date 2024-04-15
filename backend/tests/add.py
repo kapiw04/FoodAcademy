@@ -3,9 +3,9 @@ from datetime import date
 
 url = 'http://127.0.0.1:8000/add_food/'
 data = {
-    "name": "Apple",
-    "expiration_date": date(2024, 5, 27).isoformat(),
-    "quantity": 10,
+    "name": "Orange",
+    "expiration_date": date(2024, 5, 29).isoformat(),
+    "quantity": 11,
     "opened": False
 }
 
