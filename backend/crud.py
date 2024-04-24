@@ -1,20 +1,48 @@
 from sqlalchemy.orm import Session
-from . import models, schemas, definitions
+from backend.models import FoodItem
+from backend.schemas import FoodCreate, FoodResponse, FoodUpdate, FoodDelete
+import backend.definitions as definitions
+from typing import List, Union, Dict
 
 
-def create_food_item(db: Session, food: schemas.FoodCreate):
-    new_food = models.FoodItem(**food.model_dump())
+def create_food_item(db: Session, food: FoodCreate) -> FoodResponse:
+    """Create a new food item in the database.
+
+    Args:
+        db (Session): Database session.
+        food (FoodCreate): Food item to create.
+
+    Returns:
+        FoodResponse: Created food item.
+
+    """
+    new_food = FoodItem(**food.model_dump())
 
     db.add(new_food)
     db.commit()
     db.refresh(new_food)
 
-    created_food = schemas.FoodResponse(**food.model_dump(), id=new_food.id)
+    created_food = FoodResponse(**food.model_dump(), id=new_food.id)
 
     return created_food
 
 
-def read_food_items(db: Session, sort_by: str, order: str):
+def read_food_items(db: Session, sort_by: str, order: str) -> List[FoodItem]:
+    """
+    Read all food items from the database.
+
+    Args:
+        db (Session): Database session.
+        sort_by (str): Field to sort by.
+        order (str): Order to sort by.
+
+    Returns:
+        List[FoodItem]: List of food items.
+
+    Raises:
+        ValueError: If sort_by value is invalid.
+        ValueError: If order value is invalid.
+    """
     if sort_by not in definitions.sortBy:
         raise ValueError(f"Invalid sort_by value: {sort_by}")
 
@@ -23,16 +51,35 @@ def read_food_items(db: Session, sort_by: str, order: str):
 
     order = definitions.order[order](definitions.sortBy[sort_by])
 
-    return db.query(models.FoodItem).order_by(order).all()
+    return db.query(FoodItem).order_by(order).all()
 
 
-def read_food_item(db: Session, food_id: int):
-    return db.query(models.FoodItem).filter(models.FoodItem.id == food_id).one_or_none()
+def read_food_item(db: Session, food_id: int) -> FoodItem:
+    """
+    Read a single food item from the database.
+
+    Args:
+        db (Session): Database session.
+        food_id (int): Food item ID.
+
+    Returns:
+        FoodItem: Food item.
+    """
+    return db.query(FoodItem).filter(FoodItem.id == food_id).one_or_none()
 
 
-def update_food_item(db: Session, food: schemas.FoodUpdate):
-    db_food = db.query(models.FoodItem).filter(
-        models.FoodItem.id == food.id).one_or_none()
+def update_food_item(db: Session, food: FoodUpdate) -> FoodItem:
+    """Update a food item in the database.
+
+    Args:
+        db (Session): Database session.
+        food (FoodUpdate): Food item to update.
+
+    Returns:
+        FoodItem: Updated food item.
+    """
+    db_food = db.query(FoodItem).filter(
+        FoodItem.id == food.id).one_or_none()
 
     if db_food is None:
         return None
@@ -46,9 +93,19 @@ def update_food_item(db: Session, food: schemas.FoodUpdate):
     return db_food
 
 
-def delete_food_item(db: Session, food: schemas.FoodDelete):
-    db_food = db.query(models.FoodItem).filter(
-        models.FoodItem.id == food.id).one_or_none()
+def delete_food_item(db: Session, food: FoodDelete) -> Union[Dict[str, bool], None]:
+    """Delete a food item from the database.
+
+    Args:   
+        db (Session): Database session.
+        food (FoodDelete): Food item to delete.
+
+    Returns:
+        Dict[str, bool]: Deletion status.
+    """
+
+    db_food = db.query(FoodItem).filter(
+        FoodItem.id == food.id).one_or_none()
 
     if db_food is None:
         return None

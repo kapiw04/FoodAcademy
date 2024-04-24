@@ -1,5 +1,5 @@
 from enum import Enum
-from .models import FoodItem
+from backend.models import FoodItem
 from sqlalchemy.sql.expression import ColumnElement  # for asc() and desc()
 
 sortBy = {

@@ -5,7 +5,7 @@ url = 'http://127.0.0.1:8000/add_food/'
 data = {
     "name": "Orange",
     "expiration_date": date(2024, 5, 29).isoformat(),
-    "quantity": 11,
+    "quantity": "11",
     "opened": False
 }
 

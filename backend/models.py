@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Date
-from .database import Base
+from backend.database import Base
+
 
 class FoodItem(Base):
     __tablename__ = 'food_items'
