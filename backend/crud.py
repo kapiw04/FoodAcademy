@@ -51,7 +51,11 @@ def read_food_items(db: Session, sort_by: str, order: str) -> List[FoodItem]:
 
     order = definitions.order[order](definitions.sortBy[sort_by])
 
-    return db.query(FoodItem).order_by(order).all()
+    food_items = db.query(FoodItem).order_by(order).all()
+    for food in food_items:
+        print(food.__dict__)
+
+    return food_items
 
 
 def read_food_item(db: Session, food_id: int) -> FoodItem:
@@ -77,12 +81,15 @@ def update_food_item(db: Session, food: FoodUpdate) -> FoodItem:
 
     Returns:
         FoodItem: Updated food item.
+
+    Raises:
+        ValueError: If food item is not found.
     """
     db_food = db.query(FoodItem).filter(
         FoodItem.id == food.id).one_or_none()
 
     if db_food is None:
-        return None
+        raise ValueError(f"Food item with ID {food.id} not found.")
 
     for k, v in vars(food).items():
         setattr(db_food, k, v) if v else None
@@ -102,13 +109,16 @@ def delete_food_item(db: Session, food: FoodDelete) -> Union[Dict[str, bool], No
 
     Returns:
         Dict[str, bool]: Deletion status.
+
+    Raises:
+        ValueError: If food item is not found.
     """
 
     db_food = db.query(FoodItem).filter(
         FoodItem.id == food.id).one_or_none()
 
     if db_food is None:
-        return None
+        raise ValueError(f"Food item with ID {food.id} not found.")
 
     db.delete(db_food)
     db.commit()
