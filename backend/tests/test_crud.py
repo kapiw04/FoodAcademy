@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from ..database import Base, get_db
-from ..main import app
+from ..app import app
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite://"
@@ -31,13 +31,7 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
-
-class CustomTestClient(TestClient):
-    def delete_with_payload(self,  **kwargs):
-        return self.request(method="DELETE", **kwargs)
-
-
-client = CustomTestClient(app)
+client = TestClient(app)
 
 
 url = 'http://127.0.0.1:8000/'
@@ -231,11 +225,9 @@ def test_update_invalid_not_opened():
 
 # ** Test the delete_food endpoint
 def test_delete_valid():
-    data = {
-        "id": 1
-    }
-    url_delete = url + 'delete_food/'
-    response = client.delete_with_payload(url=url_delete, json=data)
+    id = 1
+    url_delete = url + 'delete_food/' + str(id)
+    response = client.delete(url_delete)
     response_data = response.json()
 
     assert response.status_code == 200
@@ -243,9 +235,7 @@ def test_delete_valid():
 
 
 def test_delete_invalid():
-    data = {
-        "id": 1
-    }
-    url_delete = url + 'delete_food/'
-    response = client.delete_with_payload(url=url_delete, json=data)
+    id = 1
+    url_delete = url + 'delete_food/' + str(id)
+    response = client.delete(url_delete)
     assert response.status_code == 404

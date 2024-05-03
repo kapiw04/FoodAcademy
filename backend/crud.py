@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from backend.models import FoodItem
-from backend.schemas import FoodCreate, FoodResponse, FoodUpdate, FoodDelete
+from backend.schemas import FoodCreate, FoodResponse, FoodUpdate
 import backend.definitions as definitions
 from typing import List, Union, Dict
 
@@ -52,8 +52,6 @@ def read_food_items(db: Session, sort_by: str, order: str) -> List[FoodItem]:
     order = definitions.order[order](definitions.sortBy[sort_by])
 
     food_items = db.query(FoodItem).order_by(order).all()
-    for food in food_items:
-        print(food.__dict__)
 
     return food_items
 
@@ -100,7 +98,7 @@ def update_food_item(db: Session, food: FoodUpdate) -> FoodItem:
     return db_food
 
 
-def delete_food_item(db: Session, food: FoodDelete) -> Union[Dict[str, bool], None]:
+def delete_food_item(db: Session, id: int) -> Union[Dict[str, bool], None]:
     """Delete a food item from the database.
 
     Args:   
@@ -115,10 +113,10 @@ def delete_food_item(db: Session, food: FoodDelete) -> Union[Dict[str, bool], No
     """
 
     db_food = db.query(FoodItem).filter(
-        FoodItem.id == food.id).one_or_none()
+        FoodItem.id == id).one_or_none()
 
     if db_food is None:
-        raise ValueError(f"Food item with ID {food.id} not found.")
+        raise ValueError(f"Food item with ID {id} not found.")
 
     db.delete(db_food)
     db.commit()

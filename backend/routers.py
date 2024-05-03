@@ -4,9 +4,10 @@ from pydantic import ValidationError
 import backend.crud as crud
 import backend.schemas as schemas
 from sqlalchemy.orm import Session
-from backend.database import get_db
+from backend.database import get_db, Base, engine
 
 router = APIRouter()
+Base.metadata.create_all(bind=engine)
 
 
 @router.get("/")
@@ -48,16 +49,16 @@ def update_food(food: schemas.FoodUpdate, database: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@ router.delete("/delete_food/")
-def delete_food(food: schemas.FoodDelete, database: Session = Depends(get_db)):
+@ router.delete("/delete_food/{food_id}")
+def delete_food(food_id: int, database: Session = Depends(get_db)):
     try:
-        return crud.delete_food_item(db=database, food=food)
+        return crud.delete_food_item(db=database, id=food_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 
 @ router.get("/food/{food_id}", response_model=schemas.FoodResponse)
-def read_food(food_id, database: Session = Depends(get_db)):
+def read_food(food_id: int, database: Session = Depends(get_db)):
     response: schemas.FoodResponse = crud.read_food_item(
         db=database, food_id=food_id)
     return response

@@ -163,7 +163,3 @@ class FoodResponse(BaseModel):
                 f"{info.field_name.capitalize()} must be past today.")
 
         return value
-
-
-class FoodDelete(BaseModel):
-    id: int
